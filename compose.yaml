@@ -6,6 +6,8 @@ services:
       - nexus-data:/nexus-data
     expose:
       - "8081"
+      - "${REGISTRY_1_PORT}"
+      - "${REGISTRY_2_PORT}"
     healthcheck:
       test: ["CMD-SHELL", "curl -fs http://localhost:8081/service/rest/v1/status || exit 1"]
       interval: 15s
@@ -21,11 +23,16 @@ services:
         condition: service_healthy
     environment:
       NEXUS_DOMAIN: ${NEXUS_DOMAIN}
+      REGISTRY_1_DOMAIN: ${REGISTRY_1_DOMAIN}
+      REGISTRY_2_DOMAIN: ${REGISTRY_2_DOMAIN}
+      REGISTRY_1_PORT: ${REGISTRY_1_PORT}
+      REGISTRY_2_PORT: ${REGISTRY_2_PORT}
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./nginx/nexus.conf.template:/etc/nginx/templates/nexus.conf.template:ro
+      - ./nginx/proxy.conf:/etc/nginx/snippets/proxy.conf:ro
       - ./certs:/etc/nginx/certs:ro
 
 volumes:
